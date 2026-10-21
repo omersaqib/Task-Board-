@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+package-lock.json
+playwright/test-results
+playwright/playwright-report
+playwright/blob-report
+backend/data
+logs
+docs/sample-report/*.html
+playwright/.cache

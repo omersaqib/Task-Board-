@@ -1,0 +1,26 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+
+# SQLite data
+backend/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Playwright output
+playwright/test-results/
+playwright/playwright-report/
+playwright/blob-report/
+playwright/.cache/
+playwright/.auth/
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+coverage/

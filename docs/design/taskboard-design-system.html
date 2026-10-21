@@ -1,0 +1,1744 @@
+<title>TaskBoard Ledger</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+/>
+<style>
+  /* ==========================================================================
+   TaskBoard "Ledger" design system — Sprint 2
+   Layout concept: a ruled ledger. Tasks are hairline-ruled rows with a status
+   glyph column, not floating cards; cards are reserved for the composer and
+   auth forms. One bold element per screen: the display-face page title.
+   SECTION 1 — TOKENS (copy verbatim into frontend/src/design/tokens.css)
+   ========================================================================== */
+  :root {
+    /* Color — light */
+    --paper: #f3f5f2; /* page background: cool paper, slight green bias */
+    --surface: #ffffff; /* cards, inputs, menus */
+    --surface-sunken: #e9eee9; /* toolbars, segmented control track, code */
+    --ink: #18211d; /* primary text */
+    --ink-muted: #526058; /* secondary text, meta (6.1:1 on paper) */
+    --line: #d3dbd5; /* hairlines, row rules */
+    --line-strong: #a9b5ae; /* input borders, control borders (3:1) */
+    --accent: #1d6b56; /* ledger green: primary actions, active filter */
+    --accent-hover: #155544;
+    --accent-soft: #dcede5; /* selected/active backgrounds */
+    --on-accent: #ffffff;
+    --focus: #2a57c6; /* focus ring, distinct from accent */
+    --danger: #b42318; /* errors, destructive, high priority, overdue */
+    --danger-soft: #fdecea;
+    --warning: #8f5400; /* medium priority, due soon */
+    --warning-soft: #fbefd9;
+    --info: #2a57c6; /* in-progress status */
+    --info-soft: #e3eafa;
+    --ok: #2b6b3d; /* done status, success messages */
+    --ok-soft: #e1f0e4;
+
+    /* Type */
+    --font-display: 'Bricolage Grotesque', 'IBM Plex Sans', system-ui, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --text-xs: 0.75rem;
+    --leading-xs: 1rem; /* 12/16 labels, badges */
+    --text-sm: 0.875rem;
+    --leading-sm: 1.25rem; /* 14/20 meta, helper, errors */
+    --text-md: 1rem;
+    --leading-md: 1.5rem; /* 16/24 body, inputs, buttons */
+    --text-lg: 1.125rem;
+    --leading-lg: 1.625rem; /* 18/26 task titles */
+    --text-xl: 1.375rem;
+    --leading-xl: 1.75rem; /* 22/28 card headings */
+    --text-2xl: 1.75rem;
+    --leading-2xl: 2.125rem; /* 28/34 page title (mobile) */
+    --text-3xl: 2.375rem;
+    --leading-3xl: 2.625rem; /* 38/42 page title (desktop) */
+
+    /* Space — 4px base */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* Radius — small by default; the ledger is square-ish on purpose */
+    --radius-sm: 4px; /* badges, chips, inputs */
+    --radius-md: 6px; /* buttons, selects, segmented control */
+    --radius-lg: 12px; /* cards (composer, auth) only */
+
+    /* Elevation — only the composer and auth card float */
+    --shadow-card: 0 1px 0 rgb(24 33 29 / 0.04), 0 6px 20px -8px rgb(24 33 29 / 0.18);
+
+    /* Sizing */
+    --control-h: 40px; /* buttons, inputs, selects */
+    --control-h-touch: 44px; /* (pointer: coarse) */
+    --content-max: 1120px;
+    --motion: 140ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --paper: #111614;
+      --surface: #19201c;
+      --surface-sunken: #0d1210;
+      --ink: #e5ece8;
+      --ink-muted: #9aa8a0;
+      --line: #2a3430;
+      --line-strong: #4a5751;
+      --accent: #5cc3a0;
+      --accent-hover: #7ed4b6;
+      --accent-soft: #17382e;
+      --on-accent: #08201a;
+      --focus: #8ba8ff;
+      --danger: #ff8b7b;
+      --danger-soft: #3a1b17;
+      --warning: #f0b45a;
+      --warning-soft: #36270f;
+      --info: #8ba8ff;
+      --info-soft: #1b2440;
+      --ok: #7cca91;
+      --ok-soft: #16301e;
+      --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3), 0 10px 24px -10px rgb(0 0 0 / 0.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme='dark'] {
+    --paper: #111614;
+    --surface: #19201c;
+    --surface-sunken: #0d1210;
+    --ink: #e5ece8;
+    --ink-muted: #9aa8a0;
+    --line: #2a3430;
+    --line-strong: #4a5751;
+    --accent: #5cc3a0;
+    --accent-hover: #7ed4b6;
+    --accent-soft: #17382e;
+    --on-accent: #08201a;
+    --focus: #8ba8ff;
+    --danger: #ff8b7b;
+    --danger-soft: #3a1b17;
+    --warning: #f0b45a;
+    --warning-soft: #36270f;
+    --info: #8ba8ff;
+    --info-soft: #1b2440;
+    --ok: #7cca91;
+    --ok-soft: #16301e;
+    --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3), 0 10px 24px -10px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+
+  /* ==========================================================================
+   SECTION 2 — COMPONENTS (reference CSS; class names are the handoff API)
+   ========================================================================== */
+  .tb {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: var(--leading-md);
+    color: var(--ink);
+  }
+  .tb *,
+  .tb *::before,
+  .tb *::after {
+    box-sizing: border-box;
+  }
+  .tb :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .tb-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-3xl);
+    line-height: var(--leading-3xl);
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .tb-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+    margin: 0;
+  }
+  .tb-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .tb-muted {
+    color: var(--ink-muted);
+  }
+
+  /* Header */
+  .tb-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .tb-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .tb-brand svg {
+    flex: none;
+  }
+  .tb-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .tb-user {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .tb-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: var(--text-xs);
+  }
+
+  /* Buttons */
+  .tb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--control-h);
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font: 600 var(--text-sm)/1 var(--font-body);
+    cursor: pointer;
+    transition:
+      background var(--motion),
+      border-color var(--motion),
+      color var(--motion);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .tb-btn--primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .tb-btn--primary:hover {
+    background: var(--accent-hover);
+  }
+  .tb-btn--secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+  .tb-btn--secondary:hover {
+    border-color: var(--ink-muted);
+  }
+  .tb-btn--ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .tb-btn--ghost:hover {
+    background: var(--surface-sunken);
+  }
+  .tb-btn--danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .tb-btn--danger:hover {
+    background: var(--danger-soft);
+  }
+  .tb-btn--danger-solid {
+    background: var(--danger);
+    color: var(--surface);
+  }
+  .tb-btn--sm {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+  }
+  .tb-btn--block {
+    width: 100%;
+  }
+  .tb-btn[disabled],
+  .tb-btn[aria-busy='true'] {
+    opacity: 0.55;
+    cursor: progress;
+  }
+  .tb-link {
+    color: var(--accent);
+    font-weight: 500;
+    text-underline-offset: 3px;
+  }
+  .tb-link:hover {
+    color: var(--accent-hover);
+  }
+
+  /* Fields */
+  .tb-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .tb-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .tb-input,
+  .tb-select,
+  .tb-textarea {
+    width: 100%;
+    min-height: var(--control-h);
+    padding: var(--space-2) var(--space-3);
+    font: var(--text-md)/var(--leading-md) var(--font-body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    transition:
+      border-color var(--motion),
+      box-shadow var(--motion);
+  }
+  .tb-textarea {
+    min-height: 72px;
+    resize: vertical;
+  }
+  .tb-input:hover,
+  .tb-select:hover,
+  .tb-textarea:hover {
+    border-color: var(--ink-muted);
+  }
+  .tb-input:focus-visible,
+  .tb-select:focus-visible,
+  .tb-textarea:focus-visible {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent);
+  }
+  .tb-input[aria-invalid='true'],
+  .tb-textarea[aria-invalid='true'] {
+    border-color: var(--danger);
+  }
+  .tb-input[type='date'] {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  .tb-error {
+    display: flex;
+    gap: var(--space-1);
+    align-items: flex-start;
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--danger);
+    overflow-wrap: anywhere;
+  }
+  .tb-error::before {
+    content: '!';
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: var(--surface);
+    font: 700 11px/16px var(--font-body);
+    text-align: center;
+  }
+
+  /* Messages */
+  .tb-alert {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    overflow-wrap: anywhere;
+  }
+  .tb-status {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--ok-soft);
+    color: var(--ok);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  /* Cards (composer + auth only) */
+  .tb-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* Segmented filter (role=group "Filter by status", buttons with aria-pressed) */
+  .tb-segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-md);
+  }
+  .tb-segmented button {
+    min-height: 34px;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: calc(var(--radius-md) - 2px);
+    background: transparent;
+    color: var(--ink-muted);
+    font: 500 var(--text-sm)/1 var(--font-body);
+    cursor: pointer;
+  }
+  .tb-segmented button:hover {
+    color: var(--ink);
+  }
+  .tb-segmented button[aria-pressed='true'] {
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+  }
+
+  /* Search */
+  .tb-search {
+    display: flex;
+    gap: var(--space-2);
+    flex: 1 1 240px;
+    min-width: 0;
+  }
+  .tb-search .tb-input {
+    padding-left: 34px;
+    background: var(--surface) no-repeat 10px 50% / 16px
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23889590' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.5 10.5 3 3'/%3E%3C/svg%3E");
+  }
+
+  /* Priority: word stays as text (contract), meter is decoration */
+  .tb-priority {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 500 var(--text-xs)/var(--leading-xs) var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tb-meter {
+    display: inline-flex;
+    gap: 2px;
+    align-items: flex-end;
+  }
+  .tb-meter i {
+    width: 3px;
+    border-radius: 1px;
+    background: var(--line-strong);
+  }
+  .tb-meter i:nth-child(1) {
+    height: 6px;
+  }
+  .tb-meter i:nth-child(2) {
+    height: 9px;
+  }
+  .tb-meter i:nth-child(3) {
+    height: 12px;
+  }
+  .tb-priority--low {
+    color: var(--ink-muted);
+  }
+  .tb-priority--low .tb-meter i:nth-child(-n + 1) {
+    background: var(--ink-muted);
+  }
+  .tb-priority--medium {
+    color: var(--warning);
+  }
+  .tb-priority--medium .tb-meter i:nth-child(-n + 2) {
+    background: var(--warning);
+  }
+  .tb-priority--high {
+    color: var(--danger);
+  }
+  .tb-priority--high .tb-meter i {
+    background: var(--danger);
+  }
+
+  /* Due date: contract text "Due YYYY-MM-DD" + separate relative hint */
+  .tb-due {
+    font: 400 var(--text-xs)/var(--leading-xs) var(--font-mono);
+    color: var(--ink-muted);
+  }
+  .tb-due-hint {
+    font: 500 var(--text-xs)/var(--leading-xs) var(--font-body);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-sunken);
+    color: var(--ink-muted);
+  }
+  .tb-due-hint--soon {
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+  .tb-due-hint--overdue {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  /* Status glyph (decorative, aria-hidden; the select carries the state) */
+  .tb-glyph {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 4px;
+    border-radius: 50%;
+    border: 2px solid var(--ink-muted);
+    position: relative;
+  }
+  .tb-glyph--in_progress {
+    border-color: var(--info);
+    background: linear-gradient(90deg, var(--info) 50%, transparent 50%);
+  }
+  .tb-glyph--done {
+    border-color: var(--ok);
+    background: var(--ok);
+  }
+  .tb-glyph--done::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--surface);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* Ledger list */
+  .tb-ledger {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .tb-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-3) var(--space-4);
+    align-items: start;
+    padding: var(--space-4) var(--space-2);
+    border-bottom: 1px solid var(--line);
+    transition: background var(--motion);
+  }
+  .tb-row:hover {
+    background: color-mix(in srgb, var(--surface-sunken) 55%, transparent);
+  }
+  .tb-row__body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .tb-row__title {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .tb-row--done .tb-row__title {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+  .tb-row__desc {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    overflow-wrap: anywhere;
+  }
+  .tb-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+  .tb-row__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .tb-row__actions .tb-select {
+    width: auto;
+    min-height: 32px;
+    padding: 2px 28px 2px var(--space-2);
+    font-size: var(--text-sm);
+  }
+  .tb-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 2px 2px 2px var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-size: var(--text-sm);
+  }
+
+  /* Empty state */
+  .tb-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-7) var(--space-4);
+    text-align: center;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--line);
+  }
+  .tb-empty svg {
+    color: var(--line-strong);
+  }
+  .tb-empty strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Layouts */
+  .tb-tasks-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+  .tb-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-3);
+  }
+  .tb-count {
+    font: 500 var(--text-xs)/var(--leading-xs) var(--font-mono);
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tb-auth-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: center;
+  }
+  .tb-auth-aside {
+    display: none;
+  }
+  .tb-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+  }
+  @media (pointer: coarse) {
+    .tb-btn,
+    .tb-input,
+    .tb-select {
+      min-height: var(--control-h-touch);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tb * {
+      transition: none !important;
+    }
+  }
+
+  /* Container-driven breakpoints so mockup frames show the real responsive layouts */
+  .tb-frame {
+    container-type: inline-size;
+  }
+  @container (min-width: 900px) {
+    .tb-tasks-layout {
+      grid-template-columns: 340px minmax(0, 1fr);
+      align-items: start;
+    }
+    .tb-tasks-layout > .tb-card {
+      position: sticky;
+      top: var(--space-5);
+    }
+    .tb-auth-layout {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 420px);
+    }
+    .tb-auth-aside {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+  }
+  @container (max-width: 480px) {
+    .tb-title {
+      font-size: var(--text-2xl);
+      line-height: var(--leading-2xl);
+    }
+    .tb-row {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .tb-row__actions {
+      grid-column: 2;
+      justify-content: flex-start;
+    }
+    .tb-card {
+      padding: var(--space-4);
+    }
+  }
+
+  /* ==========================================================================
+   SECTION 3 — THIS REFERENCE PAGE (not part of the handoff)
+   ========================================================================== */
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+  .doc {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-block: var(--space-7) var(--space-8);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+  .doc-hero {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .doc-hero h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+  .doc-hero p {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ink-muted);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+  .doc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-3);
+    border-block: 1px solid var(--line);
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    background: var(--paper);
+    z-index: 5;
+  }
+  .doc-bar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .doc-bar nav a {
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  .doc-bar nav a:hover {
+    color: var(--ink);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--paper);
+  }
+  section.doc-sec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    scroll-margin-top: 72px;
+  }
+  .doc-sec > header {
+    display: grid;
+    gap: var(--space-2);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: var(--space-3);
+  }
+  .doc-sec > header h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-2xl);
+    margin: 0;
+  }
+  .doc-sec > header p {
+    margin: 0;
+    color: var(--ink-muted);
+    max-width: 70ch;
+  }
+  .doc-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  }
+  .swatch {
+    display: grid;
+    grid-template-rows: 64px auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .swatch div:first-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .swatch div:last-child {
+    padding: var(--space-2) var(--space-3);
+    display: grid;
+    gap: 2px;
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+  }
+  .swatch code {
+    font-family: var(--font-mono);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .swatch span {
+    color: var(--ink-muted);
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+  .type-row code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .spec {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    min-width: 0;
+  }
+  .spec h3 {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .spec p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .spec .stage {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-4);
+    background: var(--paper);
+    border-radius: var(--radius-sm);
+    min-width: 0;
+  }
+  .spec .stage.col {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .frames {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .frame-label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-2);
+  }
+  .frame-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+  }
+  .tb-frame {
+    background: var(--paper);
+  }
+  .frame-desktop {
+    width: 1100px;
+  }
+  .frame-mobile {
+    width: 375px;
+  }
+  .frames-pair {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    align-items: start;
+  }
+  .app-main {
+    padding: var(--space-6) var(--space-5) var(--space-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    max-width: var(--content-max);
+    margin: 0 auto;
+  }
+  .frame-mobile .app-main {
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+  .frame-mobile .tb-header,
+  .frame-desktop .tb-header {
+    padding-inline: var(--space-5);
+  }
+  .frame-mobile .tb-header {
+    padding-inline: var(--space-4);
+  }
+  .rules {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: 1.2em;
+    color: var(--ink);
+    max-width: 75ch;
+  }
+  .rules li::marker {
+    color: var(--accent);
+  }
+  .mapping {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    min-width: 640px;
+  }
+  .mapping th,
+  .mapping td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .mapping th {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+  .mapping code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+  .table-scroll {
+    overflow-x: auto;
+  }
+  .theme-toggle {
+    display: inline-flex;
+  }
+</style>
+
+<div class="doc tb">
+  <header class="doc-hero">
+    <span class="tb-eyebrow">TaskBoard · Sprint 2 · Design system v1</span>
+    <h1>The Ledger: TaskBoard's new interface</h1>
+    <p>
+      Tasks read like entries in a ruled ledger: a status mark, a title, a priority meter and a due
+      date set in figures. Cards are kept for the two places where you write: the task composer and
+      the sign-in forms. This page is the handoff. Its tokens and component CSS are the source the
+      frontend implements from.
+    </p>
+  </header>
+
+  <div class="doc-bar">
+    <nav aria-label="Sections">
+      <a href="#foundations">Foundations</a><a href="#components">Components</a
+      ><a href="#screens">Screens</a><a href="#handoff">Handoff rules</a>
+    </nav>
+    <div class="tb-segmented theme-toggle" role="group" aria-label="Preview theme">
+      <button type="button" data-theme-set="" aria-pressed="true">System</button>
+      <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+    </div>
+  </div>
+
+  <!-- ===================== FOUNDATIONS ===================== -->
+  <section class="doc-sec" id="foundations">
+    <header>
+      <span class="tb-eyebrow">01 Foundations</span>
+      <h2>Color, type, space</h2>
+      <p>
+        Every color is a token with a light and a dark value. Status and priority colors are
+        semantic and never double as the accent. Each one also has a shape (glyph, meter bars) so
+        state is readable without color.
+      </p>
+    </header>
+
+    <div class="doc-grid" id="swatches"></div>
+
+    <div>
+      <div class="type-row">
+        <code>display · 38/42 · 700</code><span class="tb-title">Alex’s tasks</span>
+      </div>
+      <div class="type-row">
+        <code>display · 22/28 · 600</code><span class="tb-h2">New task</span>
+      </div>
+      <div class="type-row">
+        <code>body · 18/26 · 600</code
+        ><span style="font-size: var(--text-lg); line-height: var(--leading-lg); font-weight: 600"
+          >Renew the staging TLS certificate</span
+        >
+      </div>
+      <div class="type-row">
+        <code>body · 16/24 · 400</code
+        ><span
+          >Plain descriptions and form input text use the body size at 16px so iOS never zooms into
+          a field.</span
+        >
+      </div>
+      <div class="type-row">
+        <code>body · 14/20 · 400</code
+        ><span class="tb-muted" style="font-size: var(--text-sm)"
+          >Helper text, errors and secondary meta.</span
+        >
+      </div>
+      <div class="type-row">
+        <code>mono · 12/16 · 500</code><span class="tb-due">Due 2026-10-24</span>
+      </div>
+      <div class="type-row">
+        <code>mono label · 12/16</code><span class="tb-eyebrow">3 tasks</span>
+      </div>
+    </div>
+
+    <div class="doc-grid">
+      <div class="spec">
+        <h3>Spacing (4px base)</h3>
+        <div id="spaces" style="display: grid; gap: 6px"></div>
+      </div>
+      <div class="spec">
+        <h3>Radius</h3>
+        <div class="stage">
+          <div
+            style="
+              width: 56px;
+              height: 40px;
+              border: 1px solid var(--line-strong);
+              border-radius: var(--radius-sm);
+              background: var(--surface);
+            "
+          ></div>
+          <div
+            style="
+              width: 56px;
+              height: 40px;
+              border: 1px solid var(--line-strong);
+              border-radius: var(--radius-md);
+              background: var(--surface);
+            "
+          ></div>
+          <div
+            style="
+              width: 56px;
+              height: 40px;
+              border: 1px solid var(--line-strong);
+              border-radius: var(--radius-lg);
+              background: var(--surface);
+            "
+          ></div>
+        </div>
+        <p>
+          <code>--radius-sm</code> 4 inputs, badges · <code>--radius-md</code> 6 buttons ·
+          <code>--radius-lg</code> 12 cards only.
+        </p>
+      </div>
+      <div class="spec">
+        <h3>Control height</h3>
+        <div class="stage">
+          <button class="tb-btn tb-btn--primary" type="button">40px default</button>
+        </div>
+        <p>
+          44px on touch screens (<code>pointer: coarse</code>). Focus ring is 2px
+          <code>--focus</code>, offset 2px, on every interactive element.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPONENTS ===================== -->
+  <section class="doc-sec" id="components">
+    <header>
+      <span class="tb-eyebrow">02 Components</span>
+      <h2>Components with live previews</h2>
+      <p>
+        Labels in quotes are accessible names from the UI contract in
+        <code>docs/CONTRACTS.md</code>. They stay exactly as written.
+      </p>
+    </header>
+
+    <div class="doc-grid">
+      <div class="spec">
+        <h3>Buttons</h3>
+        <div class="stage">
+          <button class="tb-btn tb-btn--primary" type="button">Add task</button>
+          <button class="tb-btn tb-btn--secondary" type="button">Search</button>
+          <button class="tb-btn tb-btn--ghost tb-btn--sm" type="button">Edit</button>
+          <button class="tb-btn tb-btn--danger tb-btn--sm" type="button">Delete</button>
+          <button class="tb-btn tb-btn--primary" type="button" disabled aria-busy="true">
+            Add task
+          </button>
+        </div>
+        <p>
+          Primary: one per view (Add task, Log in, Create account). Secondary: Search, Save, Keep.
+          Ghost: Edit, Cancel, Log out. Danger outline: Delete; danger solid: Confirm. A busy button
+          keeps its label and gets <code>aria-busy</code>.
+        </p>
+      </div>
+
+      <div class="spec">
+        <h3>Text field with error</h3>
+        <div class="stage col">
+          <div class="tb-field">
+            <label class="tb-label" for="d-email">Email</label
+            ><input
+              class="tb-input"
+              id="d-email"
+              value="alex@example"
+              aria-invalid="true"
+              aria-describedby="d-email-e"
+            />
+            <p class="tb-error" id="d-email-e">Enter a valid email address</p>
+          </div>
+          <div class="tb-field">
+            <label class="tb-label" for="d-due">Due date</label
+            ><input class="tb-input" id="d-due" type="date" value="2026-10-24" />
+          </div>
+        </div>
+        <p>
+          Label above, error below with an icon so color is not the only signal. Dates use the mono
+          face.
+        </p>
+      </div>
+
+      <div class="spec">
+        <h3>Messages</h3>
+        <div class="stage col">
+          <div class="tb-alert" role="alert">Invalid email or password</div>
+          <p class="tb-status" role="status">Task “Renew the staging TLS certificate” added.</p>
+        </div>
+        <p>
+          <code>role="alert"</code> is only for errors. Success uses <code>role="status"</code>.
+          Both wrap long user text (<code>overflow-wrap: anywhere</code>, REG-007).
+        </p>
+      </div>
+
+      <div class="spec">
+        <h3>Status filter</h3>
+        <div class="stage">
+          <div class="tb-segmented" role="group" aria-label="Filter by status (example)">
+            <button type="button" aria-pressed="true">All</button
+            ><button type="button" aria-pressed="false">To do</button
+            ><button type="button" aria-pressed="false">In progress</button
+            ><button type="button" aria-pressed="false">Done</button>
+          </div>
+        </div>
+        <p>
+          A segmented control. Keep the existing buttons, names and <code>aria-pressed</code>; only
+          the styling changes.
+        </p>
+      </div>
+
+      <div class="spec">
+        <h3>Priority meter</h3>
+        <div class="stage">
+          <span class="tb-priority tb-priority--low"
+            ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>low</span
+          >
+          <span class="tb-priority tb-priority--medium"
+            ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>medium</span
+          >
+          <span class="tb-priority tb-priority--high"
+            ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>high</span
+          >
+        </div>
+        <p>
+          One, two or three filled bars. The word stays as visible text inside
+          <code>[data-testid=task-priority]</code>; the meter is <code>aria-hidden</code>.
+        </p>
+      </div>
+
+      <div class="spec">
+        <h3>Status glyph and due date</h3>
+        <div class="stage">
+          <span class="tb-glyph" aria-hidden="true"></span
+          ><span class="tb-glyph tb-glyph--in_progress" aria-hidden="true"></span
+          ><span class="tb-glyph tb-glyph--done" aria-hidden="true"></span>
+          <span class="tb-due">Due 2026-10-24</span
+          ><span class="tb-due-hint tb-due-hint--soon">in 3 days</span
+          ><span class="tb-due-hint tb-due-hint--overdue">2 days overdue</span>
+        </div>
+        <p>
+          Empty ring = to do, half = in progress, filled check = done.
+          <code>[data-testid=task-due]</code> keeps the exact text “Due YYYY-MM-DD”; the relative
+          hint is a sibling element. Soon = within 2 days.
+        </p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h3>Ledger row: default, in progress, done, confirming delete</h3>
+      <ul class="tb-ledger">
+        <li class="tb-row">
+          <span class="tb-glyph" aria-hidden="true"></span>
+          <div class="tb-row__body">
+            <h3 class="tb-row__title">Write the release notes for 1.4</h3>
+            <p class="tb-row__desc">Collect merged PRs since 1.3 and group them by area.</p>
+            <div class="tb-row__meta">
+              <span class="tb-priority tb-priority--medium"
+                ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>medium</span
+              ><span class="tb-due">Due 2026-10-24</span
+              ><span class="tb-due-hint tb-due-hint--soon">in 3 days</span>
+            </div>
+          </div>
+          <div class="tb-row__actions">
+            <select
+              class="tb-select"
+              aria-label="Status for Write the release notes for 1.4 (example)"
+            >
+              <option>To do</option>
+              <option>In progress</option>
+              <option>Done</option></select
+            ><button class="tb-btn tb-btn--ghost tb-btn--sm" type="button">Edit</button
+            ><button class="tb-btn tb-btn--danger tb-btn--sm" type="button">Delete</button>
+          </div>
+        </li>
+        <li class="tb-row">
+          <span class="tb-glyph tb-glyph--in_progress" aria-hidden="true"></span>
+          <div class="tb-row__body">
+            <h3 class="tb-row__title">Renew the staging TLS certificate</h3>
+            <div class="tb-row__meta">
+              <span class="tb-priority tb-priority--high"
+                ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>high</span
+              ><span class="tb-due">Due 2026-10-19</span
+              ><span class="tb-due-hint tb-due-hint--overdue">2 days overdue</span>
+            </div>
+          </div>
+          <div class="tb-row__actions">
+            <select class="tb-select" aria-label="Status example 2">
+              <option>To do</option>
+              <option selected>In progress</option>
+              <option>Done</option></select
+            ><button class="tb-btn tb-btn--ghost tb-btn--sm" type="button">Edit</button
+            ><button class="tb-btn tb-btn--danger tb-btn--sm" type="button">Delete</button>
+          </div>
+        </li>
+        <li class="tb-row tb-row--done">
+          <span class="tb-glyph tb-glyph--done" aria-hidden="true"></span>
+          <div class="tb-row__body">
+            <h3 class="tb-row__title">Book the venue for the team offsite</h3>
+            <div class="tb-row__meta">
+              <span class="tb-priority tb-priority--low"
+                ><span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>low</span
+              >
+            </div>
+          </div>
+          <div class="tb-row__actions">
+            <span class="tb-confirm"
+              >Delete this task?<button
+                class="tb-btn tb-btn--danger-solid tb-btn--sm"
+                type="button"
+              >
+                Confirm</button
+              ><button class="tb-btn tb-btn--ghost tb-btn--sm" type="button">Keep</button></span
+            >
+          </div>
+        </li>
+      </ul>
+      <p>
+        Rows are separated by hairlines, not boxed. Actions sit at the right on desktop and move
+        under the text below 480px. Confirming a delete swaps the buttons in place; the names
+        “Confirm delete &lt;title&gt;” and “Keep” stay as in the contract.
+      </p>
+    </div>
+
+    <div class="spec">
+      <h3>Empty state</h3>
+      <div class="tb-empty">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 40 40"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <rect x="7" y="5" width="26" height="30" rx="3" />
+          <path d="M13 14h14M13 20h14M13 26h8" />
+        </svg>
+        <strong>No tasks yet.</strong><span>Add your first task with the form.</span>
+      </div>
+      <p>
+        The text inside <code>[data-testid=empty-state]</code> must keep the current wording (“No
+        tasks yet. Add your first task above.” / “No tasks match your filters.”). On the two-column
+        desktop layout, “above” still reads correctly because the composer comes first in reading
+        order.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== SCREENS ===================== -->
+  <section class="doc-sec" id="screens">
+    <header>
+      <span class="tb-eyebrow">03 Screens</span>
+      <h2>Screens at desktop and phone width</h2>
+      <p>
+        The frames are the same HTML and CSS as above, at 1100px and 375px. Desktop frames scroll
+        sideways on small screens.
+      </p>
+    </header>
+
+    <div class="frames">
+      <div>
+        <div class="frame-label">
+          <strong>Tasks · desktop 1100px</strong
+          ><span class="tb-muted">Composer pinned left, ledger right</span>
+        </div>
+        <div class="frame-scroll">
+          <div class="tb-frame frame-desktop" id="frame-tasks-desktop"></div>
+        </div>
+      </div>
+      <div class="frames-pair">
+        <div>
+          <div class="frame-label">
+            <strong>Tasks · phone 375px</strong
+            ><span class="tb-muted">Composer first, then the list</span>
+          </div>
+          <div class="frame-scroll">
+            <div class="tb-frame frame-mobile" id="frame-tasks-mobile"></div>
+          </div>
+        </div>
+        <div>
+          <div class="frame-label">
+            <strong>Log in · phone 375px</strong><span class="tb-muted">Server error shown</span>
+          </div>
+          <div class="frame-scroll">
+            <div class="tb-frame frame-mobile" id="frame-login-mobile"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="frame-label">
+          <strong>Create account · desktop 1100px</strong
+          ><span class="tb-muted">Split layout with a sample ledger</span>
+        </div>
+        <div class="frame-scroll">
+          <div class="tb-frame frame-desktop" id="frame-register-desktop"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HANDOFF ===================== -->
+  <section class="doc-sec" id="handoff">
+    <header>
+      <span class="tb-eyebrow">04 Handoff</span>
+      <h2>Handoff rules for the frontend team</h2>
+      <p>The design changes how the app looks. It must not change what the E2E suite relies on.</p>
+    </header>
+    <ol class="rules">
+      <li>
+        Copy Section 1 tokens into <code>frontend/src/design/tokens.css</code> and the Section 2
+        component CSS into <code>frontend/src/design/components.css</code>. Replace the
+        <code>@container</code> rules with <code>@media</code> at the same widths. Delete the old
+        ad-hoc rules in <code>styles.css</code>.
+      </li>
+      <li>
+        Every accessible name, label, role, route, text and <code>data-testid</code> in
+        <code>docs/CONTRACTS.md</code> stays identical. Decorative additions (glyph, meter, due
+        hint, icons) are <code>aria-hidden</code> or separate elements outside contract nodes.
+      </li>
+      <li>
+        <code>[data-testid=task-priority]</code> text stays the lower-case word;
+        <code>[data-testid=task-due]</code> text stays “Due YYYY-MM-DD”; the relative hint is a
+        sibling element.
+      </li>
+      <li>
+        Do not add a second element with any contract name on the same page (e.g. no extra “Search”
+        or “Log in” button).
+      </li>
+      <li>
+        Both themes follow <code>prefers-color-scheme</code>. Text meets 4.5:1 in both; control
+        borders and focus rings meet 3:1.
+      </li>
+      <li>No horizontal scroll at 375px with long unbroken titles (REG-007 must stay green).</li>
+      <li>
+        Load fonts from Google Fonts in <code>index.html</code> with <code>display=swap</code> and
+        the fallback stacks given in the tokens.
+      </li>
+    </ol>
+    <div class="table-scroll">
+      <table class="mapping">
+        <thead>
+          <tr>
+            <th>Current component</th>
+            <th>Design component</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Header.tsx</code></td>
+            <td><code>.tb-header .tb-brand .tb-nav .tb-user</code></td>
+            <td>
+              Brand mark SVG + wordmark; avatar initial is <code>aria-hidden</code>; name stays in
+              <code>[data-testid=current-user]</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>Field.tsx</code>, <code>FormAlert</code></td>
+            <td><code>.tb-field .tb-label .tb-input .tb-error .tb-alert</code></td>
+            <td>
+              Keep label/id wiring and <code>aria-invalid</code>/<code>aria-describedby</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>LoginPage</code>, <code>RegisterPage</code></td>
+            <td><code>.tb-auth-layout .tb-card</code> + aside</td>
+            <td>
+              Aside (≥900px only) shows a static sample ledger with product copy; its headings must
+              not reuse “Log in”/“Create account”.
+            </td>
+          </tr>
+          <tr>
+            <td><code>TaskForm.tsx</code></td>
+            <td><code>.tb-card</code>, <code>.tb-form-row</code>, <code>.tb-status</code></td>
+            <td>Sticky on desktop. Priority + due date share a row.</td>
+          </tr>
+          <tr>
+            <td><code>TasksPage.tsx</code> toolbar</td>
+            <td><code>.tb-toolbar .tb-segmented .tb-search .tb-count</code></td>
+            <td>
+              Same buttons and <code>aria-pressed</code>; search keeps its form and “Search” button.
+            </td>
+          </tr>
+          <tr>
+            <td><code>TaskItem.tsx</code></td>
+            <td><code>.tb-row</code> + glyph, meter, due, <code>.tb-confirm</code></td>
+            <td>Compute the relative due hint in a small pure helper and unit-test it.</td>
+          </tr>
+          <tr>
+            <td>Empty state</td>
+            <td><code>.tb-empty</code></td>
+            <td>Wording unchanged.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<template id="tpl-header">
+  <header class="tb-header">
+    <a class="tb-brand" href="#screens"
+      ><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <rect x="2" y="3" width="18" height="3" rx="1" fill="var(--accent)" />
+        <rect x="2" y="9.5" width="13" height="3" rx="1" fill="var(--ink)" />
+        <rect x="2" y="16" width="8" height="3" rx="1" fill="var(--ink-muted)" /></svg
+      >TaskBoard</a
+    >
+    <nav class="tb-nav" aria-label="Main (example)">{{nav}}</nav>
+  </header>
+</template>
+
+<script>
+  (function () {
+    // Theme preview toggle
+    var root = document.documentElement;
+    document.querySelectorAll('[data-theme-set]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var value = btn.getAttribute('data-theme-set');
+        if (value) root.setAttribute('data-theme', value);
+        else root.removeAttribute('data-theme');
+        document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b === btn));
+        });
+      });
+    });
+
+    // Swatches
+    var swatches = [
+      ['--paper', 'Page background'],
+      ['--surface', 'Cards, inputs'],
+      ['--surface-sunken', 'Toolbars, tracks'],
+      ['--ink', 'Primary text'],
+      ['--ink-muted', 'Secondary text, meta'],
+      ['--line', 'Hairlines, row rules'],
+      ['--line-strong', 'Control borders'],
+      ['--accent', 'Primary action, active'],
+      ['--accent-soft', 'Active backgrounds'],
+      ['--focus', 'Focus ring'],
+      ['--info', 'In progress'],
+      ['--ok', 'Done, success'],
+      ['--warning', 'Medium priority, due soon'],
+      ['--danger', 'Errors, high, overdue'],
+    ];
+    var host = document.getElementById('swatches');
+    swatches.forEach(function (s) {
+      var el = document.createElement('div');
+      el.className = 'swatch';
+      el.innerHTML =
+        '<div style="background:var(' +
+        s[0] +
+        ')"></div><div><code>' +
+        s[0] +
+        '</code><span>' +
+        s[1] +
+        '</span></div>';
+      host.appendChild(el);
+    });
+    var spaces = document.getElementById('spaces');
+    [1, 2, 3, 4, 5, 6, 7, 8].forEach(function (n) {
+      var row = document.createElement('div');
+      row.style.cssText =
+        'display:flex;align-items:center;gap:8px;font:12px/16px var(--font-mono);color:var(--ink-muted)';
+      row.innerHTML =
+        '<span style="width:64px">--space-' +
+        n +
+        '</span><span style="height:8px;background:var(--accent);border-radius:2px;width:var(--space-' +
+        n +
+        ')"></span>';
+      spaces.appendChild(row);
+    });
+
+    // Screen mockups
+    var headerTpl = document.getElementById('tpl-header').innerHTML;
+    function header(authed) {
+      var nav = authed
+        ? '<span class="tb-user"><span class="tb-avatar" aria-hidden="true">A</span><span>Alex Rivera</span></span><button class="tb-btn tb-btn--ghost tb-btn--sm" type="button">Log out</button>'
+        : '<a class="tb-link" href="#screens">Log in</a><a class="tb-btn tb-btn--secondary tb-btn--sm" href="#screens">Sign up</a>';
+      return headerTpl.replace('{{nav}}', nav);
+    }
+    var meter = '<span class="tb-meter" aria-hidden="true"><i></i><i></i><i></i></span>';
+    function row(t) {
+      return (
+        '<li class="tb-row' +
+        (t.status === 'done' ? ' tb-row--done' : '') +
+        '">' +
+        '<span class="tb-glyph tb-glyph--' +
+        t.status +
+        '" aria-hidden="true"></span>' +
+        '<div class="tb-row__body"><h3 class="tb-row__title">' +
+        t.title +
+        '</h3>' +
+        (t.desc ? '<p class="tb-row__desc">' + t.desc + '</p>' : '') +
+        '<div class="tb-row__meta"><span class="tb-priority tb-priority--' +
+        t.priority +
+        '">' +
+        meter +
+        t.priority +
+        '</span>' +
+        (t.due ? '<span class="tb-due">Due ' + t.due + '</span>' : '') +
+        (t.hint
+          ? '<span class="tb-due-hint ' + (t.hintClass || '') + '">' + t.hint + '</span>'
+          : '') +
+        '</div></div><div class="tb-row__actions"><select class="tb-select" tabindex="-1" aria-label="Status (example)">' +
+        ['To do', 'In progress', 'Done']
+          .map(function (l, i) {
+            return (
+              '<option' +
+              (['todo', 'in_progress', 'done'][i] === t.status ? ' selected' : '') +
+              '>' +
+              l +
+              '</option>'
+            );
+          })
+          .join('') +
+        '</select><button class="tb-btn tb-btn--ghost tb-btn--sm" type="button" tabindex="-1">Edit</button><button class="tb-btn tb-btn--danger tb-btn--sm" type="button" tabindex="-1">Delete</button></div></li>'
+      );
+    }
+    var tasks = [
+      {
+        title: 'Renew the staging TLS certificate',
+        priority: 'high',
+        status: 'in_progress',
+        due: '2026-10-19',
+        hint: '2 days overdue',
+        hintClass: 'tb-due-hint--overdue',
+      },
+      {
+        title: 'Write the release notes for 1.4',
+        desc: 'Collect merged PRs since 1.3 and group them by area.',
+        priority: 'medium',
+        status: 'todo',
+        due: '2026-10-23',
+        hint: 'in 2 days',
+        hintClass: 'tb-due-hint--soon',
+      },
+      {
+        title: 'Review the Playwright flake report',
+        priority: 'medium',
+        status: 'todo',
+        due: '2026-10-30',
+        hint: 'in 9 days',
+      },
+      { title: 'Book the venue for the team offsite', priority: 'low', status: 'done' },
+    ];
+    var composer =
+      '<form class="tb-card" onsubmit="return false"><h2 class="tb-h2">New task</h2>' +
+      '<div class="tb-field"><label class="tb-label">Title<input class="tb-input" tabindex="-1" value="Draft Q4 roadmap" style="margin-top:4px"></label></div>' +
+      '<div class="tb-field"><label class="tb-label">Description<textarea class="tb-textarea" tabindex="-1" style="margin-top:4px">Outline themes for the planning meeting.</textarea></label></div>' +
+      '<div class="tb-form-row"><div class="tb-field"><label class="tb-label">Priority<select class="tb-select" tabindex="-1" style="margin-top:4px"><option>Low</option><option selected>Medium</option><option>High</option></select></label></div>' +
+      '<div class="tb-field"><label class="tb-label">Due date<input class="tb-input" tabindex="-1" type="date" value="2026-10-31" style="margin-top:4px"></label></div></div>' +
+      '<button class="tb-btn tb-btn--primary tb-btn--block" type="button" tabindex="-1">Add task</button>' +
+      '<p class="tb-status">Task “Review the Playwright flake report” added.</p></form>';
+    var list =
+      '<section aria-label="Task list (example)"><div class="tb-toolbar">' +
+      '<div class="tb-segmented"><button type="button" tabindex="-1" aria-pressed="true">All</button><button type="button" tabindex="-1" aria-pressed="false">To do</button><button type="button" tabindex="-1" aria-pressed="false">In progress</button><button type="button" tabindex="-1" aria-pressed="false">Done</button></div>' +
+      '<form class="tb-search" onsubmit="return false"><input class="tb-input" tabindex="-1" type="search" placeholder="Search tasks" aria-label="Search (example)"><button class="tb-btn tb-btn--secondary" type="button" tabindex="-1">Search</button></form></div>' +
+      '<p class="tb-count">4 tasks</p><ul class="tb-ledger">' +
+      tasks.map(row).join('') +
+      '</ul></section>';
+    function tasksScreen() {
+      return (
+        '<div class="tb">' +
+        header(true) +
+        '<main class="app-main"><div><span class="tb-eyebrow">Tuesday 21 October</span><h1 class="tb-title">Alex Rivera’s tasks</h1></div>' +
+        '<div class="tb-tasks-layout">' +
+        composer +
+        list +
+        '</div></main></div>'
+      );
+    }
+    function authCard(kind, withError) {
+      var isLogin = kind === 'login';
+      var fields = isLogin
+        ? [
+            ['Email', 'email', 'alex@example.com'],
+            ['Password', 'password', 'secret123'],
+          ]
+        : [
+            ['Name', 'text', 'Alex Rivera'],
+            ['Email', 'email', 'alex@example.com'],
+            ['Password', 'password', 'Passw0rd!'],
+            ['Confirm password', 'password', 'Passw0rd!'],
+          ];
+      return (
+        '<form class="tb-card" onsubmit="return false"><div><h1 class="tb-title" style="font-size:var(--text-2xl);line-height:var(--leading-2xl)">' +
+        (isLogin ? 'Log in' : 'Create account') +
+        '</h1>' +
+        '<p class="tb-muted" style="margin:4px 0 0">' +
+        (isLogin ? 'Pick up where you left off.' : 'Your tasks, kept in one ledger.') +
+        '</p></div>' +
+        (withError ? '<div class="tb-alert">Invalid email or password</div>' : '') +
+        fields
+          .map(function (f) {
+            return (
+              '<div class="tb-field"><label class="tb-label">' +
+              f[0] +
+              '<input class="tb-input" tabindex="-1" type="' +
+              f[1] +
+              '" value="' +
+              f[2] +
+              '" style="margin-top:4px"></label></div>'
+            );
+          })
+          .join('') +
+        '<button class="tb-btn tb-btn--primary tb-btn--block" type="button" tabindex="-1">' +
+        (isLogin ? 'Log in' : 'Create account') +
+        '</button>' +
+        '<p class="tb-muted" style="margin:0;font-size:var(--text-sm)">' +
+        (isLogin
+          ? 'No account? <a class="tb-link" href="#screens">Create one</a>'
+          : 'Already registered? <a class="tb-link" href="#screens">Log in</a>') +
+        '</p></form>'
+      );
+    }
+    function authScreen(kind, withError) {
+      var aside =
+        '<div class="tb-auth-aside"><span class="tb-eyebrow">TaskBoard</span><p class="tb-title" style="max-width:14ch">Every task, one ruled line.</p>' +
+        '<ul class="tb-ledger" aria-hidden="true">' +
+        tasks.slice(0, 3).map(row).join('') +
+        '</ul></div>';
+      return (
+        '<div class="tb">' +
+        header(false) +
+        '<main class="app-main"><div class="tb-auth-layout">' +
+        aside +
+        authCard(kind, withError) +
+        '</div></main></div>'
+      );
+    }
+    document.getElementById('frame-tasks-desktop').innerHTML = tasksScreen();
+    document.getElementById('frame-tasks-mobile').innerHTML = tasksScreen();
+    document.getElementById('frame-login-mobile').innerHTML = authScreen('login', true);
+    document.getElementById('frame-register-desktop').innerHTML = authScreen('register', false);
+    // Mockups are pictures of the UI: keep them out of the tab order and the accessibility tree.
+    document.querySelectorAll('.tb-frame').forEach(function (f) {
+      f.setAttribute('inert', '');
+    });
+  })();
+</script>

@@ -1,0 +1,117 @@
+/* TaskBoard "Ledger" design tokens (Section 1 of docs/design/taskboard-design-system.html). */
+:root {
+  /* Color — light */
+  --paper: #f3f5f2; /* page background: cool paper, slight green bias */
+  --surface: #ffffff; /* cards, inputs, menus */
+  --surface-sunken: #e9eee9; /* toolbars, segmented control track, code */
+  --ink: #18211d; /* primary text */
+  --ink-muted: #526058; /* secondary text, meta (6.1:1 on paper) */
+  --line: #d3dbd5; /* hairlines, row rules */
+  --line-strong: #a9b5ae; /* input borders, control borders (3:1) */
+  --accent: #1d6b56; /* ledger green: primary actions, active filter */
+  --accent-hover: #155544;
+  --accent-soft: #dcede5; /* selected/active backgrounds */
+  --on-accent: #ffffff;
+  --focus: #2a57c6; /* focus ring, distinct from accent */
+  --danger: #b42318; /* errors, destructive, high priority, overdue */
+  --danger-soft: #fdecea;
+  --warning: #8f5400; /* medium priority, due soon */
+  --warning-soft: #fbefd9;
+  --info: #2a57c6; /* in-progress status */
+  --info-soft: #e3eafa;
+  --ok: #2b6b3d; /* done status, success messages */
+  --ok-soft: #e1f0e4;
+
+  /* Type */
+  --font-display: 'Bricolage Grotesque', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --text-xs: 0.75rem;
+  --leading-xs: 1rem; /* 12/16 labels, badges */
+  --text-sm: 0.875rem;
+  --leading-sm: 1.25rem; /* 14/20 meta, helper, errors */
+  --text-md: 1rem;
+  --leading-md: 1.5rem; /* 16/24 body, inputs, buttons */
+  --text-lg: 1.125rem;
+  --leading-lg: 1.625rem; /* 18/26 task titles */
+  --text-xl: 1.375rem;
+  --leading-xl: 1.75rem; /* 22/28 card headings */
+  --text-2xl: 1.75rem;
+  --leading-2xl: 2.125rem; /* 28/34 page title (mobile) */
+  --text-3xl: 2.375rem;
+  --leading-3xl: 2.625rem; /* 38/42 page title (desktop) */
+
+  /* Space — 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Radius — small by default; the ledger is square-ish on purpose */
+  --radius-sm: 4px; /* badges, chips, inputs */
+  --radius-md: 6px; /* buttons, selects, segmented control */
+  --radius-lg: 12px; /* cards (composer, auth) only */
+
+  /* Elevation — only the composer and auth card float */
+  --shadow-card: 0 1px 0 rgb(24 33 29 / 0.04), 0 6px 20px -8px rgb(24 33 29 / 0.18);
+
+  /* Sizing */
+  --control-h: 40px; /* buttons, inputs, selects */
+  --control-h-touch: 44px; /* (pointer: coarse) */
+  --content-max: 1120px;
+  --motion: 140ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #111614;
+    --surface: #19201c;
+    --surface-sunken: #0d1210;
+    --ink: #e5ece8;
+    --ink-muted: #9aa8a0;
+    --line: #2a3430;
+    --line-strong: #4a5751;
+    --accent: #5cc3a0;
+    --accent-hover: #7ed4b6;
+    --accent-soft: #17382e;
+    --on-accent: #08201a;
+    --focus: #8ba8ff;
+    --danger: #ff8b7b;
+    --danger-soft: #3a1b17;
+    --warning: #f0b45a;
+    --warning-soft: #36270f;
+    --info: #8ba8ff;
+    --info-soft: #1b2440;
+    --ok: #7cca91;
+    --ok-soft: #16301e;
+    --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3), 0 10px 24px -10px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --paper: #111614;
+  --surface: #19201c;
+  --surface-sunken: #0d1210;
+  --ink: #e5ece8;
+  --ink-muted: #9aa8a0;
+  --line: #2a3430;
+  --line-strong: #4a5751;
+  --accent: #5cc3a0;
+  --accent-hover: #7ed4b6;
+  --accent-soft: #17382e;
+  --on-accent: #08201a;
+  --focus: #8ba8ff;
+  --danger: #ff8b7b;
+  --danger-soft: #3a1b17;
+  --warning: #f0b45a;
+  --warning-soft: #36270f;
+  --info: #8ba8ff;
+  --info-soft: #1b2440;
+  --ok: #7cca91;
+  --ok-soft: #16301e;
+  --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3), 0 10px 24px -10px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}

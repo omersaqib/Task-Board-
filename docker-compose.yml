@@ -1,0 +1,28 @@
+# Local/production-like stack:  JWT_SECRET=$(openssl rand -hex 32) docker compose up --build
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: '3001'
+      DATABASE_PATH: /data/taskboard.db
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+    volumes:
+      - taskboard-data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - '8080:80'
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  taskboard-data:

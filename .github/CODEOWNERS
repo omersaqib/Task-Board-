@@ -1,0 +1,9 @@
+# REPLACE `@your-org/qa-leads` with a real GitHub team (or user) that has write
+# access to this repository before enabling "Require review from Code Owners".
+# Until it is replaced, CODEOWNERS-protected files cannot be approved.
+
+/playwright/playwright.config.ts  @your-org/qa-leads
+/playwright/scripts/              @your-org/qa-leads
+/.github/                         @your-org/qa-leads
+/scripts/                         @your-org/qa-leads
+/eslint.config.js                 @your-org/qa-leads

@@ -1,0 +1,38 @@
+{
+  "name": "taskboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Full-stack task manager with a Playwright quality gate",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "playwright"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,magenta \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "start": "concurrently -k -n api,web -c blue,magenta \"npm run start -w backend\" \"npm run preview -w frontend\"",
+    "build": "npm run build -w backend -w frontend",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck --workspaces",
+    "test:unit": "npm run test -w backend -w frontend",
+    "test:e2e": "npm run test -w playwright",
+    "verify": "npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-playwright": "^2.12.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.0"
+  }
+}
